@@ -6,6 +6,9 @@ MAINTAINER Pierre-Alexis de Solminihac <pa@quai13.com>
 # ENABLE REPOSITORIES
 #####################
 
+# choose a faster mirror
+COPY sources.list /etc/apt/sources.list
+
 # enable docker repository
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apt-transport-https ca-certificates
@@ -20,6 +23,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-key add /tmp/blackfire.key && \
 # enable debian jessie backports
 RUN echo "deb http://httpredir.debian.org/debian jessie-backports main" | tee /etc/apt/sources.list.d/backports.list
 
+# enable dotdeb repository
+ADD https://www.dotdeb.org/dotdeb.gpg /tmp/dotdeb.key
+RUN DEBIAN_FRONTEND=noninteractive apt-key add /tmp/dotdeb.key && \
+    echo "deb http://packages.dotdeb.org jessie all" | tee /etc/apt/sources.list.d/dotdeb.list
 
 ##################
 # INSTALL PACKAGES
@@ -33,15 +40,25 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install dialog
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install locales-all
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install net-tools dnsutils strace
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install sudo
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apache2 libapache2-mod-php5 php5-apcu
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install memcached php5-memcache php5-memcached
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php5-intl php-gettext
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php5-mysqlnd php5-pgsql
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php5-json php5-xsl
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php5-imap php5-curl php5-gd
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php5-imagick
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php5-oauth
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php-pear
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install memcached
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apache2
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libapache2-mod-php7.0
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-apcu
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-apcu-bc
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-memcache
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-memcached
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-intl
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-mysql
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-pgsql
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-json
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-xsl
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-imap
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-curl
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-gd
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-imagick
+#RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-oauth
+#RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php-gettext
+#RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php-pear
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install bash bash-completion
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install ncdu ncurses-bin
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install vim nano
@@ -114,13 +131,13 @@ RUN curl -O "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
     mv wp-cli.phar wp
 
 # install php beautifiers
-WORKDIR /usr/local/bin
-RUN wget http://get.sensiolabs.org/php-cs-fixer.phar -O php-cs-fixer && \
-    chmod a+x php-cs-fixer
-RUN pear install PHP_Beautifier-0.1.15
-RUN git clone https://github.com/pa-de-solminihac/php-auto-indent.git /usr/local/src/php-auto-indent && \
-    chmod a+x /usr/local/src/php-auto-indent && \
-    ln -s /usr/local/src/php-auto-indent/php-auto-indent /usr/local/bin
+#WORKDIR /usr/local/bin
+#RUN wget http://get.sensiolabs.org/php-cs-fixer.phar -O php-cs-fixer && \
+#    chmod a+x php-cs-fixer
+#RUN pear install PHP_Beautifier-0.1.15
+#RUN git clone https://github.com/pa-de-solminihac/php-auto-indent.git /usr/local/src/php-auto-indent && \
+#    chmod a+x /usr/local/src/php-auto-indent && \
+#    ln -s /usr/local/src/php-auto-indent/php-auto-indent /usr/local/bin
 
 # install sitesync
 RUN git clone https://github.com/pa-de-solminihac/sitesync.git /sitesync && \
@@ -256,6 +273,8 @@ RUN echo 'cd /var/www/html' >> /home/devdocker/.bashrc
 
 # start ssh-agent at startup
 RUN echo 'if [ "$(pgrep ssh-agent)" == "" ]; then SSHAGENTEVAL="$(ssh-agent -s)"; echo "$SSHAGENTEVAL" | grep -v echo >> /home/devdocker/.bashrc; eval "$SSHAGENTEVAL"; fi' >> /home/devdocker/.bashrc
+
+RUN echo '' > /etc/motd
 
 RUN echo devdocker:devdocker | chpasswd
 
