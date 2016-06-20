@@ -65,10 +65,20 @@ if [ "$DEVDOCKER_ID" == "" ]; then
     if [[ "$QUIET" == "0" ]]; then
         echo
         echo -ne "\033$TERM_COLOR_YELLOW"
-        echo "# Fixing UID=$(id -u) and GID=$(id -g)"
+        echo "# Mapping permissions:"
+        echo -n "    devdocker";
+        sleep 1;
+        echo -n " = "
+        sleep 1;
+        echo "$(id --name -u)"
+        sleep 1;
+        echo -n "    users"
+        sleep 1;
+        echo -n " = "
+        sleep 1;
+        echo -n "$(id --name -g)"
         echo -ne "\033$TERM_COLOR_NORMAL"
     fi
-    sleep 5
 else
     if [[ "$QUIET" == "0" ]]; then
         echo -ne "\033$TERM_COLOR_YELLOW"
