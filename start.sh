@@ -70,13 +70,13 @@ if [ "$DEVDOCKER_ID" == "" ]; then
         sleep 1;
         echo -n " = "
         sleep 1;
-        echo "$(id --name -u)"
+        echo "$(id -n -u)"
         sleep 1;
         echo -n "    users"
         sleep 1;
         echo -n " = "
         sleep 1;
-        echo -n "$(id --name -g)"
+        echo -n "$(id -n -g)"
         echo -ne "\033$TERM_COLOR_NORMAL"
     fi
 else
