@@ -77,7 +77,7 @@ if [ "$DEVDOCKER_ID" == "" ]; then
         echo -n " = "
         sleep 1;
         echo -n "$(id -n -g)"
-        echo -ne "\033$TERM_COLOR_NORMAL"
+        echo -e "\033$TERM_COLOR_NORMAL"
     fi
 else
     if [[ "$QUIET" == "0" ]]; then
