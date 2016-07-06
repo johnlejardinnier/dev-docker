@@ -38,11 +38,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install docker-engine
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install dialog
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install locales-all
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install net-tools dnsutils strace
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install net-tools dnsutils whois strace
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install sudo
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install memcached
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apache2
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libapache2-mod-php7.0
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-mbstring
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-apcu
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-apcu-bc
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php7.0-memcache
@@ -83,6 +84,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install unzip unrar-free p7zip-ful
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install openjdk-7-jre
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install -t jessie-backports libreoffice-writer
 
+# install letsencrypt from backports
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install -t jessie-backports python-certbot-apache
 
 #################################
 # WORKAROUND for write permission
@@ -270,6 +273,9 @@ RUN echo 'if [ "$TERM" == "dumb" ]; then ' >> /home/devdocker/.bashrc && \
 
 # cd /var/www/html at startup
 RUN echo 'cd /var/www/html' >> /home/devdocker/.bashrc
+
+# longer log messages
+RUN echo '$MaxMessageSize 20k' > /etc/rsyslog.d/devdocker.conf
 
 # start ssh-agent at startup
 RUN echo 'if [ "$(pgrep ssh-agent)" == "" ]; then SSHAGENTEVAL="$(ssh-agent -s)"; echo "$SSHAGENTEVAL" | grep -v echo >> /home/devdocker/.bashrc; eval "$SSHAGENTEVAL"; fi' >> /home/devdocker/.bashrc
