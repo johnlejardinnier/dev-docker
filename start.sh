@@ -41,6 +41,7 @@ if [ "$DEVDOCKER_ID" == "" ]; then
         -p 3306:3306 \
         -e "USER_ID=$(id -u)" \
         -e "GROUP_ID=$(id -g)" \
+        -e "USER_FULLNAME=\"$USER_FULLNAME\"" \
         -e "MYSQL_FORCED_ROOT_PASSWORD=$MYSQL_FORCED_ROOT_PASSWORD" \
         -e "BLACKFIRE_SERVER_ID=$BLACKFIRE_SERVER_ID" \
         -e "BLACKFIRE_SERVER_TOKEN=$BLACKFIRE_SERVER_TOKEN" \
